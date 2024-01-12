@@ -1,0 +1,14 @@
+# Compiled code
+build/
+
+# Dependency directories
+node_modules/
+
+# TypeScript cache
+*.tsbuildinfo
+
+# npm cache directory
+.npm
+
+# eslint cache
+.eslintcache
