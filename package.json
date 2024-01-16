@@ -1,6 +1,6 @@
 {
   "name": "@fieldguide/pipeline",
-  "description": "A simple Javascript library for building synchronous process pipelines",
+  "description": "A toolkit to easily build synchronous process pipelines in TypeScript/JavaScript",
   "version": "1.0.0",
   "scripts": {
     "build": "tsc",

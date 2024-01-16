@@ -55,20 +55,27 @@ interface BasePipelineMiddleware<
 /**
  * Event-based middleware to run around each pipeline stage
  */
-export type PipelineMiddleware = Partial<BasePipelineMiddleware>;
+export type PipelineMiddlewareFactory = (
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  ...args: any[]
+) => Partial<BasePipelineMiddleware>;
+
+export type PipelineMiddleware =
+  | Partial<BasePipelineMiddleware>
+  | PipelineMiddlewareFactory;
 
 /**
  * The events that are supported by pipeline middleware
  */
-export type PipelineMiddlewareEventType = keyof PipelineMiddleware;
+export type PipelineMiddlewareEventType = keyof BasePipelineMiddleware;
 
 /**
  * Functions that can be assigned to each event in the middleware
  */
 export type PipelineMiddlewareCallable<
-  A extends object,
-  C extends object,
-  R extends object
+  A extends object = object,
+  C extends object = object,
+  R extends object = object
 > = (input: PipelineMiddlewarePayload<A, C, R>) => Promise<void> | void;
 
 /**

@@ -5,6 +5,7 @@ import {
   PipelineInitializer,
   PipelineMetadata,
   PipelineMiddleware,
+  PipelineMiddlewareCallable,
   PipelineMiddlewareEventType,
   PipelineMiddlewarePayload,
   PipelineResultValidator,
@@ -101,7 +102,15 @@ async function executeMiddlewareForEvent<
   middleware: PipelineMiddleware[],
   payload: PipelineMiddlewarePayload<A, C, R>
 ) {
-  const handlers = compact(middleware.map((m) => m[event]));
+  const handlers = compact<PipelineMiddlewareCallable<object, object, object>>(
+    middleware.map((m) => {
+      if (typeof m === "function") {
+        return m()[event];
+      } else {
+        return m[event];
+      }
+    })
+  );
 
   for (const handler of handlers) {
     await handler(payload);
