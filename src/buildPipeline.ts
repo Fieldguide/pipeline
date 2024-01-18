@@ -39,28 +39,32 @@ export function buildPipeline<
   middleware = [],
 }: BuildPipelineInput<A, C, R>): Pipeline<A, R> {
   return async (args) => {
-    const stageNames = stages.map((s) => s.name);
+    const results: Partial<R> = {};
+
+    /** A context (or undefined) value used for catching/reporting errors */
+    let maybeContext: C | undefined = undefined;
 
     const metadata: PipelineMetadata<A> = {
       name,
       arguments: args,
     };
 
-    const context = await initializer(args);
-
-    const results: Partial<R> = {};
-
-    const buildMiddlewarePayload = (
-      currentStage: string
-    ): PipelineMiddlewarePayload<A, C, R> => ({
-      context,
-      metadata,
-      results,
-      stageNames,
-      currentStage,
-    });
-
     try {
+      const stageNames = stages.map((s) => s.name);
+
+      const context = await initializer(args);
+      maybeContext = context;
+
+      const buildMiddlewarePayload = (
+        currentStage: string
+      ): PipelineMiddlewarePayload<A, C, R> => ({
+        context,
+        metadata,
+        results,
+        stageNames,
+        currentStage,
+      });
+
       for (const stage of stages) {
         await executeMiddlewareForEvent(
           "onStageStart",
@@ -88,7 +92,13 @@ export function buildPipeline<
 
       return results;
     } catch (e) {
-      throw new PipelineError(`${String(e)}`, context, results, metadata, e);
+      throw new PipelineError(
+        `${String(e)}`,
+        maybeContext,
+        results,
+        metadata,
+        e
+      );
     }
   };
 }
