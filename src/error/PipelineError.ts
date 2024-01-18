@@ -16,7 +16,7 @@ export class PipelineError<
   }
 
   private pipelineData: {
-    context: C;
+    context?: C;
     results: Partial<R>;
     metadata: PipelineMetadata<A>;
   };
