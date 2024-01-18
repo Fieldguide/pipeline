@@ -114,4 +114,4 @@ In order to decorate or extend pipeline error handling, use a standard try/catch
 
 ## Example Use Cases
 
-1. Data Export Pipeline
+1. [Data Export Pipeline](./docs/cases/data-export-pipeline.md)
