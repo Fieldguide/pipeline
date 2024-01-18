@@ -23,7 +23,7 @@ export class PipelineError<
 
   constructor(
     message: string,
-    protected pipelineContext: C,
+    protected pipelineContext: C | undefined,
     protected pipelineResults: Partial<R>,
     protected pipelineMetadata: PipelineMetadata<A>,
     /** A throwable that caused this exception */
