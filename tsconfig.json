@@ -18,7 +18,6 @@
     "resolveJsonModule": true,
   },
   "include": ["src"],
-  "exclude": ["src/**/__tests__/**", "src/**/__mocks__/**"],
   "ts-node": {
     "swc": true, // https://typestrong.org/ts-node/docs/swc
 
