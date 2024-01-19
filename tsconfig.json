@@ -1,10 +1,29 @@
 {
+  "extends": "@tsconfig/node18/tsconfig.json",
   "compilerOptions": {
-    "target": "ES6",
-    "module": "CommonJS",
-    "declaration": true,
-    "outDir": "./build",
-    "strict": true
+    "baseUrl": "src",
+    "rootDir": "src/",
+    "outDir": "build/",
+
+    // pulls from Node 18 + Strictest: https://github.com/tsconfig/bases/blob/main/bases/node18-strictest.combined.json
+    "allowJs": false,
+    "allowSyntheticDefaultImports": true,
+    "allowUnusedLabels": false,
+    "allowUnreachableCode": false,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitOverride": true,
+    "noUncheckedIndexedAccess": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "resolveJsonModule": true
   },
-  "include": ["src"]
+  "include": ["src"],
+  "ts-node": {
+    "swc": true, // https://typestrong.org/ts-node/docs/swc
+
+    // https://typestrong.org/ts-node/docs/paths/
+    // tsconfig-paths removes the need for NODE_PATH=./src and allows for
+    // fancier paths: https://medium.com/@fmoessle/typescript-paths-with-ts-node-ts-node-dev-and-jest-671deacf6428
+    "require": ["tsconfig-paths/register", "dotenv/config"]
+  }
 }
