@@ -27,7 +27,7 @@ export class PipelineError<
     protected pipelineResults: Partial<R>,
     protected pipelineMetadata: PipelineMetadata<A>,
     /** A throwable that caused this exception */
-    public readonly cause?: unknown
+    public override readonly cause?: unknown
   ) {
     // prepend the message with the pipeline name
     super(`[${pipelineMetadata.name}] ${message}`);
