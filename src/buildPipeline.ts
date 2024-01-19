@@ -15,7 +15,7 @@ import {
 interface BuildPipelineInput<
   A extends object,
   C extends object,
-  R extends object
+  R extends object,
 > {
   name: string;
   initializer: PipelineInitializer<C, A>;
@@ -30,7 +30,7 @@ interface BuildPipelineInput<
 export function buildPipeline<
   A extends object,
   C extends object,
-  R extends object
+  R extends object,
 >({
   name,
   initializer,
@@ -56,7 +56,7 @@ export function buildPipeline<
       maybeContext = context;
 
       const buildMiddlewarePayload = (
-        currentStage: string
+        currentStage: string,
       ): PipelineMiddlewarePayload<A, C, R> => ({
         context,
         metadata,
@@ -69,7 +69,7 @@ export function buildPipeline<
         await executeMiddlewareForEvent(
           "onStageStart",
           middleware,
-          buildMiddlewarePayload(stage.name)
+          buildMiddlewarePayload(stage.name),
         );
 
         const stageResults = await stage(context, metadata);
@@ -82,7 +82,7 @@ export function buildPipeline<
         await executeMiddlewareForEvent(
           "onStageComplete",
           [...middleware].reverse(),
-          buildMiddlewarePayload(stage.name)
+          buildMiddlewarePayload(stage.name),
         );
       }
 
@@ -97,7 +97,7 @@ export function buildPipeline<
         maybeContext,
         results,
         metadata,
-        e
+        e,
       );
     }
   };
@@ -106,11 +106,11 @@ export function buildPipeline<
 async function executeMiddlewareForEvent<
   A extends object,
   C extends object,
-  R extends object
+  R extends object,
 >(
   event: PipelineMiddlewareEventType,
   middleware: PipelineMiddleware[],
-  payload: PipelineMiddlewarePayload<A, C, R>
+  payload: PipelineMiddlewarePayload<A, C, R>,
 ) {
   const handlers = compact<PipelineMiddlewareCallable<object, object, object>>(
     middleware.map((m) => {
@@ -119,7 +119,7 @@ async function executeMiddlewareForEvent<
       } else {
         return m[event];
       }
-    })
+    }),
   );
 
   for (const handler of handlers) {
@@ -132,7 +132,7 @@ async function executeMiddlewareForEvent<
  */
 function isValidResult<R extends object>(
   result: Partial<R>,
-  validator: PipelineResultValidator<R>
+  validator: PipelineResultValidator<R>,
 ): result is R {
   return validator(result);
 }

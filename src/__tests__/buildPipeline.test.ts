@@ -39,7 +39,7 @@ describe("buildPipeline", () => {
       const test = () => runPipelineForStages(partialResultsStages);
 
       await expect(test).rejects.toThrow(
-        "Results from pipeline failed validation"
+        "Results from pipeline failed validation",
       );
       await expect(test).rejects.toThrow(PipelineError);
     });
@@ -100,7 +100,7 @@ describe("buildPipeline", () => {
 
 function runPipelineForStages(
   stages: TestStage[],
-  middleware: PipelineMiddleware[] = []
+  middleware: PipelineMiddleware[] = [],
 ) {
   const pipeline = buildPipeline<
     TestPipelineArguments,

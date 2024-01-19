@@ -6,7 +6,7 @@ import { PipelineMetadata } from "../types";
 export class PipelineError<
   A extends object,
   C extends object,
-  R extends object
+  R extends object,
 > extends Error {
   /**
    * Retrieve data from the pipeline execution that caused this error. This includes the Context, Metadata, and any Results from the pipeline so far.
@@ -27,7 +27,7 @@ export class PipelineError<
     protected pipelineResults: Partial<R>,
     protected pipelineMetadata: PipelineMetadata<A>,
     /** A throwable that caused this exception */
-    public override readonly cause?: unknown
+    public override readonly cause?: unknown,
   ) {
     // prepend the message with the pipeline name
     super(`[${pipelineMetadata.name}] ${message}`);

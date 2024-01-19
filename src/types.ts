@@ -2,7 +2,7 @@
  * A pipeline is an executable that takes in arguments and produces results
  */
 export type Pipeline<A extends object, R extends object> = (
-  args: A
+  args: A,
 ) => Promise<R>;
 
 /**
@@ -11,10 +11,10 @@ export type Pipeline<A extends object, R extends object> = (
 export type PipelineStage<
   A extends object,
   C extends object,
-  R extends object
+  R extends object,
 > = (
   context: C,
-  metadata: PipelineMetadata<A>
+  metadata: PipelineMetadata<A>,
 ) => Promise<Partial<R>> | Partial<R> | Promise<void> | void;
 
 /**
@@ -23,14 +23,14 @@ export type PipelineStage<
  * Note that the A type (Arguments) is optional if the arguments are not needed to initialize the context.
  */
 export type PipelineInitializer<C extends object, A extends object = object> = (
-  args: A
+  args: A,
 ) => Promise<C> | C;
 
 /**
  * Validates that results at the conclusion of the pipeline's execution are complete
  */
 export type PipelineResultValidator<R extends object> = (
-  results: Partial<R>
+  results: Partial<R>,
 ) => boolean;
 
 /**
@@ -44,7 +44,7 @@ export interface PipelineMetadata<A extends object> {
 interface BasePipelineMiddleware<
   A extends object = object,
   C extends object = object,
-  R extends object = object
+  R extends object = object,
 > {
   /** Runs before a pipeline stage is executed */
   onStageStart: PipelineMiddlewareCallable<A, C, R>;
@@ -75,7 +75,7 @@ export type PipelineMiddlewareEventType = keyof BasePipelineMiddleware;
 export type PipelineMiddlewareCallable<
   A extends object = object,
   C extends object = object,
-  R extends object = object
+  R extends object = object,
 > = (input: PipelineMiddlewarePayload<A, C, R>) => Promise<void> | void;
 
 /**
@@ -84,7 +84,7 @@ export type PipelineMiddlewareCallable<
 export interface PipelineMiddlewarePayload<
   A extends object,
   C extends object,
-  R extends object
+  R extends object,
 > {
   context: C;
   metadata: PipelineMetadata<A>;

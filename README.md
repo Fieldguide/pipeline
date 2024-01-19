@@ -48,7 +48,7 @@ The [pipeline builder](./src/buildPipeline.ts) is a factory that accepts the ind
 
 ```typescript
 export type Pipeline<A extends object, R extends object> = (
-  args: A
+  args: A,
 ) => Promise<R>;
 ```
 
