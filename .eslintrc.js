@@ -10,11 +10,6 @@ module.exports = {
   env: {
     node: true,
   },
-  settings: {
-    "import/resolver": {
-      typescript: {}, // this loads <rootdir>/tsconfig.json to eslint
-    },
-  },
   overrides: [
     {
       files: ["**/*.ts?(x)"],
