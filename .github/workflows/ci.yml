@@ -10,20 +10,18 @@ jobs:
   lint-and-typecheck:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
           cache: "npm"
       - name: Cache node_modules/.cache directory
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: node_modules/.cache
           key: node-modules-dot-cache-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}-${{ github.run_id }}
           restore-keys: |
             node-modules-dot-cache-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}-
-      - name: Setup auth for private GH packages
-        run: echo "//npm.pkg.github.com/:_authToken=${{ secrets.GH_PACKAGES_RO_BOT_TOKEN }}" > ~/.npmrc
       - run: npm ci --prefer-offline --no-audit
       - run: npm run prettier
       - run: npx tsc --noEmit
