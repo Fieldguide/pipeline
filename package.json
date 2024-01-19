@@ -39,7 +39,6 @@
     "@typescript-eslint/parser": "^6.19.0",
     "eslint": "^8.40.0",
     "eslint-config-prettier": "^9.1.0",
-    "eslint-formatter-summary": "^1.1.0",
     "eslint-plugin-unused-imports": "^3.0.0",
     "jest": "^29.5.0",
     "lodash": "^4.17.21",
