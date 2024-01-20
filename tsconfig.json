@@ -18,12 +18,4 @@
     "resolveJsonModule": true,
   },
   "include": ["src"],
-  "ts-node": {
-    "swc": true, // https://typestrong.org/ts-node/docs/swc
-
-    // https://typestrong.org/ts-node/docs/paths/
-    // tsconfig-paths removes the need for NODE_PATH=./src and allows for
-    // fancier paths: https://medium.com/@fmoessle/typescript-paths-with-ts-node-ts-node-dev-and-jest-671deacf6428
-    "require": ["tsconfig-paths/register", "dotenv/config"],
-  },
 }
