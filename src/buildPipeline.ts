@@ -113,13 +113,7 @@ async function executeMiddlewareForEvent<
   payload: PipelineMiddlewarePayload<A, C, R>,
 ) {
   const handlers = compact<PipelineMiddlewareCallable<object, object, object>>(
-    middleware.map((m) => {
-      if (typeof m === "function") {
-        return m()[event];
-      } else {
-        return m[event];
-      }
-    }),
+    middleware.map((m) => m[event]),
   );
 
   for (const handler of handlers) {

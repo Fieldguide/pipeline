@@ -91,9 +91,7 @@ If **Middleware** is specified, it will be run on the specified stage lifecycle 
 | `onStageStart`    | Runs before each stage is executed |
 | `onStageComplete` | Runs after each stage is executed  |
 
-Middleware can be specified as an object with one or more event keys or as a factory which returns an object with one or more event keys.
-
-A middleware callable is provided the following attributes:
+Middleware is specified as an object with middleware callbacks mapped to at least one of the above event keys. A middleware callback is provided the following attributes:
 
 | Parameter      | Description                                                                   |
 | -------------- | ----------------------------------------------------------------------------- |
@@ -103,8 +101,15 @@ A middleware callable is provided the following attributes:
 | `stageNames`   | An array of the names of the methods that make up the current pipeline stages |
 | `currentStage` | The name of the current pipeline stage                                        |
 
-> [!NOTE]
-> See the [LogStageMiddleware](./src/middleware/logStageMiddleware.ts) for a simple middleware implementation.
+See the [LogStageMiddlewareFactory](./src/middleware/logStageMiddlewareFactory.ts) for a simple middleware implementation. It is wrapped in a factory method so a log method can be properly injected.
+
+```typescript
+buildPipeline({
+  /* ... */
+  middleware: [logStageMiddlewareFactory(logger.log)],
+  /* ... */
+});
+```
 
 ## Error Handling
 

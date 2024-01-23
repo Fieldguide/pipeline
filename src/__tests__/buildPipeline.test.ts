@@ -12,7 +12,7 @@ import {
 import { buildPipeline } from "../buildPipeline";
 import { PipelineError } from "../error/PipelineError";
 import { returnSumResult } from "./../__mocks__/TestPipeline";
-import { PipelineMiddleware, PipelineMiddlewareFactory } from "./../types";
+import { PipelineMiddleware } from "./../types";
 
 const INCREMENT = 5;
 
@@ -65,16 +65,10 @@ describe("buildPipeline", () => {
       onStageComplete: partialComplete,
     };
 
-    const factoryStart = jest.fn();
-    const middlewareFactory: PipelineMiddlewareFactory = () => ({
-      onStageStart: factoryStart,
-    });
-
     beforeEach(() => {
       testStart.mockClear();
       testComplete.mockClear();
       partialComplete.mockClear();
-      factoryStart.mockClear();
     });
 
     it("should run the test middleware", async () => {
@@ -88,12 +82,6 @@ describe("buildPipeline", () => {
       await runPipelineForStages(successfulStages, [partialMiddleware]);
 
       expect(partialComplete).toHaveBeenCalledTimes(successfulStages.length);
-    });
-
-    it("should run the middleware factory", async () => {
-      await runPipelineForStages(successfulStages, [middlewareFactory]);
-
-      expect(factoryStart).toHaveBeenCalledTimes(successfulStages.length);
     });
   });
 });

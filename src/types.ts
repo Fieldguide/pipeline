@@ -55,14 +55,7 @@ interface BasePipelineMiddleware<
 /**
  * Event-based middleware to run around each pipeline stage
  */
-export type PipelineMiddlewareFactory = (
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  ...args: any[]
-) => Partial<BasePipelineMiddleware>;
-
-export type PipelineMiddleware =
-  | Partial<BasePipelineMiddleware>
-  | PipelineMiddlewareFactory;
+export type PipelineMiddleware = Partial<BasePipelineMiddleware>;
 
 /**
  * The events that are supported by pipeline middleware
