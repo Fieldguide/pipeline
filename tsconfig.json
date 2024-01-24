@@ -1,0 +1,21 @@
+{
+  "extends": "@tsconfig/node18/tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": "src",
+    "rootDir": "src/",
+    "outDir": "build/",
+
+    // pulls from Node 18 + Strictest: https://github.com/tsconfig/bases/blob/main/bases/node18-strictest.combined.json
+    "allowJs": false,
+    "allowSyntheticDefaultImports": true,
+    "allowUnusedLabels": false,
+    "allowUnreachableCode": false,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitOverride": true,
+    "noUncheckedIndexedAccess": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "resolveJsonModule": true,
+  },
+  "include": ["src"],
+}

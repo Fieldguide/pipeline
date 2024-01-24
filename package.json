@@ -1,0 +1,50 @@
+{
+  "name": "@fieldguide/pipeline",
+  "description": "A toolkit to easily build synchronous process pipelines in TypeScript/JavaScript",
+  "version": "0.1.0",
+  "scripts": {
+    "build": "tsc",
+    "eslint": "eslint --ext .js,.ts --cache --cache-location=node_modules/.cache/eslint --cache-strategy content .",
+    "eslint:fix": "npm run eslint -- --fix",
+    "prettier": "prettier --check .",
+    "prettier:fix": "prettier --write .",
+    "test": "NODE_PATH=./src jest --onlyChanged --watch --runInBand --detectOpenHandles",
+    "test:ci": "NODE_PATH=./src jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fieldguide/pipeline.git"
+  },
+  "keywords": [
+    "javascript",
+    "pipeline",
+    "synchronous",
+    "chain",
+    "processing"
+  ],
+  "author": "Fieldguide",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/fieldguide/pipeline/issues"
+  },
+  "homepage": "https://github.com/fieldguide/pipeline#readme",
+  "devDependencies": {
+    "@babel/core": "^7.21.8",
+    "@babel/preset-env": "^7.21.5",
+    "@babel/preset-typescript": "^7.21.5",
+    "@tsconfig/node18": "^18.2.2",
+    "@types/jest": "^29.5.1",
+    "@types/lodash": "^4.14.194",
+    "@typescript-eslint/eslint-plugin": "^6.19.0",
+    "@typescript-eslint/parser": "^6.19.0",
+    "eslint": "^8.40.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-unused-imports": "^3.0.0",
+    "jest": "^29.5.0",
+    "prettier": "^3.2.4",
+    "typescript": "^5.0.4"
+  },
+  "dependencies": {
+    "lodash": "^4.17.21"
+  }
+}
