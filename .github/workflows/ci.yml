@@ -27,3 +27,7 @@ jobs:
       - run: npx tsc --noEmit
       - run: npm run test:ci
       - run: npm run eslint
+      - run: npm run build
+      - run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
