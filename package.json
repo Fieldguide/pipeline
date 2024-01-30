@@ -2,6 +2,8 @@
   "name": "@fieldguide/pipeline",
   "description": "A toolkit to easily build synchronous process pipelines in TypeScript/JavaScript",
   "version": "0.1.0",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
   "scripts": {
     "build": "tsc",
     "eslint": "eslint --ext .js,.ts --cache --cache-location=node_modules/.cache/eslint --cache-strategy content .",
@@ -15,6 +17,9 @@
     "type": "git",
     "url": "git+https://github.com/fieldguide/pipeline.git"
   },
+  "files": [
+    "build/"
+  ],
   "keywords": [
     "javascript",
     "pipeline",
