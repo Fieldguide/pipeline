@@ -24,6 +24,6 @@ jobs:
             node-modules-dot-cache-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}-
       - run: npm ci --prefer-offline --no-audit
       - run: npm run prettier
-      - run: npx tsc --noEmit
       - run: npm run test:ci
       - run: npm run eslint
+      - run: npm run build

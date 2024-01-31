@@ -1,0 +1,54 @@
+name: "Publish to npm"
+
+on:
+  release:
+    types: [released]
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false # enqueue deployment jobs
+
+env:
+  SLACK_DEPLOY_BOT_TOKEN: ${{ secrets.SLACK_DEPLOY_BOT_TOKEN }}
+  SLACK_DEPLOY_CHANNEL: ${{ vars.SLACK_DEPLOY_CHANNEL }}
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Post to Slack
+        uses: Fieldguide/action-slack-deploy-pipeline@v1
+        id: slack
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Parse version
+        id: version
+        run: echo "value=${GITHUB_REF#refs/*/v}" >> $GITHUB_OUTPUT
+
+      - name: Update npm package version for build / publishing
+        run: npm version ${{ steps.version.outputs.value }} --no-git-tag-version
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+          cache: "npm"
+          registry-url: "https://registry.npmjs.org"
+          scope: "@fieldguide"
+
+      - name: Install dependencies
+        run: npm ci --prefer-offline --no-audit
+
+      - name: Publish package
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: "Post to Slack"
+        uses: Fieldguide/action-slack-deploy-pipeline@v1
+        if: always()
+        with:
+          thread_ts: ${{ steps.slack.outputs.ts }}
+          conclusion: true
