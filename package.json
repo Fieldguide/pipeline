@@ -5,7 +5,8 @@
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "scripts": {
-    "build": "tsc",
+    "prepack": "npm run build",
+    "build": "tsc --project tsconfig.build.json",
     "eslint": "eslint --ext .js,.ts --cache --cache-location=node_modules/.cache/eslint --cache-strategy content .",
     "eslint:fix": "npm run eslint -- --fix",
     "prettier": "prettier --check .",
