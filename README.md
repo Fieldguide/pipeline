@@ -1,3 +1,5 @@
+[![npm version](https://badge.fury.io/js/@fieldguide%2Fpipeline.svg)](https://www.npmjs.com/package/@fieldguide/pipeline)
+
 # Pipeline
 
 A type-safe toolkit to easily compose synchronous process chains in TypeScript/JavaScript
