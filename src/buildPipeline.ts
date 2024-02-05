@@ -7,7 +7,6 @@ import type {
   PipelineMiddleware,
   PipelineResultValidator,
   PipelineStage,
-  PipelineStageResult,
 } from "./types";
 
 interface BuildPipelineInput<
@@ -57,7 +56,7 @@ export function buildPipeline<
       const wrapMiddleware = (
         middleware: PipelineMiddleware<A, C, R>,
         currentStage: string,
-        next: () => PipelineStageResult<R>,
+        next: () => Promise<Partial<R>>,
       ) => {
         return () => {
           return middleware({
@@ -73,7 +72,7 @@ export function buildPipeline<
 
       for (const stage of stages) {
         // initialize next() with the stage itself
-        let next = () => stage(context, metadata);
+        let next = () => stage(context, metadata) as Promise<Partial<R>>;
 
         // wrap stage with middleware such that the first middleware is the outermost function
         for (const middleware of reversedMiddleware) {

@@ -53,7 +53,7 @@ export type PipelineMiddleware<
   A extends object = object,
   C extends object = object,
   R extends object = object,
-> = (payload: PipelineMiddlewarePayload<A, C, R>) => PipelineStageResult<R>;
+> = (payload: PipelineMiddlewarePayload<A, C, R>) => Promise<Partial<R>>;
 
 /**
  * The payload that gets passed to each `PipelineMiddleware`
@@ -68,5 +68,5 @@ export interface PipelineMiddlewarePayload<
   results: Readonly<Partial<R>>;
   stageNames: string[];
   currentStage: string;
-  next: () => PipelineStageResult<R>;
+  next: () => Promise<Partial<R>>;
 }
