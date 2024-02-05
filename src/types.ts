@@ -12,10 +12,15 @@ export type PipelineStage<
   A extends object,
   C extends object,
   R extends object,
-> = (
-  context: C,
-  metadata: PipelineMetadata<A>,
-) => Promise<Partial<R>> | Partial<R> | Promise<void> | void;
+> = (context: C, metadata: PipelineMetadata<A>) => PipelineStageResult<R>;
+
+/**
+ * Optional partial result that gets merged with results from other stages
+ */
+export type PipelineStageResult<R extends object> =
+  | Promise<Partial<R> | void>
+  | Partial<R>
+  | void;
 
 /**
  * A method that initializes the pipeline by creating the context object that gets passed to each stage. Note that because the context extends PipelineContext, this method must also include the pipeline name and arguments when constructing the context object.
@@ -30,8 +35,8 @@ export type PipelineInitializer<C extends object, A extends object = object> = (
  * Validates that results at the conclusion of the pipeline's execution are complete
  */
 export type PipelineResultValidator<R extends object> = (
-  results: Partial<R>,
-) => boolean;
+  results: Readonly<Partial<R>>,
+) => results is R;
 
 /**
  * Basic metadata about a pipeline execution
@@ -41,38 +46,17 @@ export interface PipelineMetadata<A extends object> {
   name: Readonly<string>;
 }
 
-interface BasePipelineMiddleware<
+/**
+ * Middleware function that can run code before and/or after each stage
+ */
+export type PipelineMiddleware<
   A extends object = object,
   C extends object = object,
   R extends object = object,
-> {
-  /** Runs before a pipeline stage is executed */
-  onStageStart: PipelineMiddlewareCallable<A, C, R>;
-  /** Runs after a pipeline stage is executing and includes results returned by that stage */
-  onStageComplete: PipelineMiddlewareCallable<A, C, R>;
-}
+> = (payload: PipelineMiddlewarePayload<A, C, R>) => PipelineStageResult<R>;
 
 /**
- * Event-based middleware to run around each pipeline stage
- */
-export type PipelineMiddleware = Partial<BasePipelineMiddleware>;
-
-/**
- * The events that are supported by pipeline middleware
- */
-export type PipelineMiddlewareEventType = keyof BasePipelineMiddleware;
-
-/**
- * Functions that can be assigned to each event in the middleware
- */
-export type PipelineMiddlewareCallable<
-  A extends object = object,
-  C extends object = object,
-  R extends object = object,
-> = (input: PipelineMiddlewarePayload<A, C, R>) => Promise<void> | void;
-
-/**
- * The payload that gets passed to each `PipelineMiddlewareCallable`
+ * The payload that gets passed to each `PipelineMiddleware`
  */
 export interface PipelineMiddlewarePayload<
   A extends object,
@@ -84,4 +68,5 @@ export interface PipelineMiddlewarePayload<
   results: Readonly<Partial<R>>;
   stageNames: string[];
   currentStage: string;
+  next: () => PipelineStageResult<R>;
 }

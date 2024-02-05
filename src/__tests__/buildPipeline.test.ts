@@ -1,4 +1,6 @@
+import { logStageMiddlewareFactory } from "middleware/logStageMiddlewareFactory";
 import {
+  TestMiddleware,
   TestPipelineArguments,
   TestPipelineContext,
   TestPipelineResults,
@@ -12,7 +14,6 @@ import {
 import { buildPipeline } from "../buildPipeline";
 import { PipelineError } from "../error/PipelineError";
 import { returnSumResult } from "./../__mocks__/TestPipeline";
-import { PipelineMiddleware } from "./../types";
 
 const INCREMENT = 5;
 
@@ -53,42 +54,55 @@ describe("buildPipeline", () => {
   });
 
   describe("when using middleware", () => {
-    const testStart = jest.fn();
-    const testComplete = jest.fn();
-    const testMiddleware: PipelineMiddleware = {
-      onStageStart: testStart,
-      onStageComplete: testComplete,
-    };
+    let middlewareCalls: string[];
 
-    const partialComplete = jest.fn();
-    const partialMiddleware: PipelineMiddleware = {
-      onStageComplete: partialComplete,
-    };
+    let testMiddleware1: TestMiddlewareMock;
+    let testMiddleware2: TestMiddlewareMock;
 
-    beforeEach(() => {
-      testStart.mockClear();
-      testComplete.mockClear();
-      partialComplete.mockClear();
+    beforeAll(async () => {
+      middlewareCalls = [];
+
+      const createMiddlewareMock = (name: string): TestMiddlewareMock => {
+        return jest.fn(({ currentStage, next }) => {
+          middlewareCalls.push(`${currentStage}: ${name}`);
+
+          return next();
+        });
+      };
+
+      testMiddleware1 = createMiddlewareMock("testMiddleware1");
+      testMiddleware2 = createMiddlewareMock("testMiddleware2");
+
+      await runPipelineForStages(successfulStages, [
+        logStageMiddlewareFactory(),
+        testMiddleware1,
+        testMiddleware2,
+      ]);
     });
 
-    it("should run the test middleware", async () => {
-      await runPipelineForStages(successfulStages, [testMiddleware]);
-
-      expect(testStart).toHaveBeenCalledTimes(successfulStages.length);
-      expect(testComplete).toHaveBeenCalledTimes(successfulStages.length);
+    it(`should run each middleware ${successfulStages.length} times`, () => {
+      expect(testMiddleware1).toHaveBeenCalledTimes(successfulStages.length);
+      expect(testMiddleware2).toHaveBeenCalledTimes(successfulStages.length);
     });
 
-    it("should run the partial middleware", async () => {
-      await runPipelineForStages(successfulStages, [partialMiddleware]);
-
-      expect(partialComplete).toHaveBeenCalledTimes(successfulStages.length);
+    it("should run middleware in the correct order", () => {
+      expect(middlewareCalls).toEqual([
+        "additionStage: testMiddleware1",
+        "additionStage: testMiddleware2",
+        "additionStage: testMiddleware1",
+        "additionStage: testMiddleware2",
+        "returnSumResult: testMiddleware1",
+        "returnSumResult: testMiddleware2",
+        "returnHistoryResult: testMiddleware1",
+        "returnHistoryResult: testMiddleware2",
+      ]);
     });
   });
 });
 
 function runPipelineForStages(
   stages: TestStage[],
-  middleware: PipelineMiddleware[] = [],
+  middleware: TestMiddleware[] = [],
 ) {
   const pipeline = buildPipeline<
     TestPipelineArguments,
@@ -104,3 +118,8 @@ function runPipelineForStages(
 
   return pipeline({ increment: INCREMENT });
 }
+
+type TestMiddlewareMock = jest.Mock<
+  ReturnType<TestMiddleware>,
+  Parameters<TestMiddleware>
+>;
