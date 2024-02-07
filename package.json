@@ -17,7 +17,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/fieldguide/pipeline.git"
+    "url": "git+https://github.com/Fieldguide/pipeline.git"
   },
   "files": [
     "build/"
@@ -32,9 +32,9 @@
   "author": "Fieldguide",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/fieldguide/pipeline/issues"
+    "url": "https://github.com/Fieldguide/pipeline/issues"
   },
-  "homepage": "https://github.com/fieldguide/pipeline#readme",
+  "homepage": "https://github.com/Fieldguide/pipeline#readme",
   "devDependencies": {
     "@babel/core": "^7.21.8",
     "@babel/preset-env": "^7.21.5",

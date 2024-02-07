@@ -1,0 +1,32 @@
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    reviewers:
+      - "namoscato"
+      - "nrutman"
+    groups:
+      eslint:
+        patterns:
+          - "@typescript-eslint/*"
+          - "eslint"
+          - "eslint-*"
+      jest:
+        patterns:
+          - "@babel/*"
+          - "@types/jest"
+          - "jest"
+      typescript:
+        patterns:
+          - "@tsconfig/*"
+          - "typescript"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    reviewers:
+      - "namoscato"
+      - "nrutman"
