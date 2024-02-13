@@ -1,6 +1,7 @@
 import { last } from "lodash";
-import {
+import type {
   PipelineInitializer,
+  PipelineMiddleware,
   PipelineResultValidator,
   PipelineStage,
 } from "../types";
@@ -19,6 +20,12 @@ export interface TestPipelineResults {
 }
 
 export type TestStage = PipelineStage<
+  TestPipelineArguments,
+  TestPipelineContext,
+  TestPipelineResults
+>;
+
+export type TestMiddleware = PipelineMiddleware<
   TestPipelineArguments,
   TestPipelineContext,
   TestPipelineResults
@@ -82,7 +89,7 @@ export const errorStage: TestStage = () => {
  */
 export const testPipelineResultValidator: PipelineResultValidator<
   TestPipelineResults
-> = (results) => {
+> = (results): results is TestPipelineResults => {
   // false if sum is not a number
   if (typeof results.sum !== "number") {
     return false;

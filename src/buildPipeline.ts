@@ -1,13 +1,10 @@
-import { compact, merge } from "lodash";
+import { merge } from "lodash";
 import { PipelineError } from "./error/PipelineError";
-import {
+import type {
   Pipeline,
   PipelineInitializer,
   PipelineMetadata,
   PipelineMiddleware,
-  PipelineMiddlewareCallable,
-  PipelineMiddlewareEventType,
-  PipelineMiddlewarePayload,
   PipelineResultValidator,
   PipelineStage,
 } from "./types";
@@ -21,7 +18,7 @@ interface BuildPipelineInput<
   initializer: PipelineInitializer<C, A>;
   stages: PipelineStage<A, C, R>[];
   resultsValidator: PipelineResultValidator<R>;
-  middleware?: PipelineMiddleware[];
+  middleware?: PipelineMiddleware<A, C, R>[];
 }
 
 /**
@@ -36,7 +33,7 @@ export function buildPipeline<
   initializer,
   stages,
   resultsValidator,
-  middleware = [],
+  middleware: middlewares = [],
 }: BuildPipelineInput<A, C, R>): Pipeline<A, R> {
   return async (args) => {
     const results: Partial<R> = {};
@@ -55,78 +52,55 @@ export function buildPipeline<
       const context = await initializer(args);
       maybeContext = context;
 
-      const buildMiddlewarePayload = (
+      const reversedMiddleware = [...middlewares].reverse();
+      const wrapMiddleware = (
+        middleware: PipelineMiddleware<A, C, R>,
         currentStage: string,
-      ): PipelineMiddlewarePayload<A, C, R> => ({
-        context,
-        metadata,
-        results,
-        stageNames,
-        currentStage,
-      });
+        next: () => Promise<Partial<R>>,
+      ) => {
+        return () => {
+          return middleware({
+            context,
+            metadata,
+            results,
+            stageNames,
+            currentStage,
+            next,
+          });
+        };
+      };
 
       for (const stage of stages) {
-        await executeMiddlewareForEvent(
-          "onStageStart",
-          middleware,
-          buildMiddlewarePayload(stage.name),
-        );
+        // initialize next() with the stage itself
+        let next = () => stage(context, metadata) as Promise<Partial<R>>;
 
-        const stageResults = await stage(context, metadata);
+        // wrap stage with middleware such that the first middleware is the outermost function
+        for (const middleware of reversedMiddleware) {
+          next = wrapMiddleware(middleware, stage.name, next);
+        }
+
+        // invoke middleware-wrapped stage
+        const stageResults = await next();
 
         // if the stage returns results, merge them onto the results object
         if (stageResults) {
           merge(results, stageResults);
         }
-
-        await executeMiddlewareForEvent(
-          "onStageComplete",
-          [...middleware].reverse(),
-          buildMiddlewarePayload(stage.name),
-        );
       }
 
-      if (!isValidResult(results, resultsValidator)) {
+      if (!resultsValidator(results)) {
         throw new Error("Results from pipeline failed validation");
       }
 
       return results;
-    } catch (e) {
+    } catch (cause) {
       throw new PipelineError(
-        `${String(e)}`,
+        String(cause),
         maybeContext,
         results,
         metadata,
-        e,
+        cause,
       );
     }
   };
-}
-
-async function executeMiddlewareForEvent<
-  A extends object,
-  C extends object,
-  R extends object,
->(
-  event: PipelineMiddlewareEventType,
-  middleware: PipelineMiddleware[],
-  payload: PipelineMiddlewarePayload<A, C, R>,
-) {
-  const handlers = compact<PipelineMiddlewareCallable<object, object, object>>(
-    middleware.map((m) => m[event]),
-  );
-
-  for (const handler of handlers) {
-    await handler(payload);
-  }
-}
-
-/**
- * Wraps the provided validator in a type guard
- */
-function isValidResult<R extends object>(
-  result: Partial<R>,
-  validator: PipelineResultValidator<R>,
-): result is R {
-  return validator(result);
 }

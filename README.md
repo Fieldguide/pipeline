@@ -86,14 +86,9 @@ The **Results Validator** ensures that the pipeline has fulfilled the interface 
 
 ## Middleware
 
-If **Middleware** is specified, it will be run on the specified stage lifecycle event(s) for each stage in the pipeline.
+If **Middleware** is specified, it will be wrapped around each stage in the pipeline. This follows [a pattern similar to Express](https://expressjs.com/en/guide/using-middleware.html). Each middleware is called in the order it is specified and includes a `next()` to call the next middleware/stage.
 
-| Stage Event       | Description                        |
-| ----------------- | ---------------------------------- |
-| `onStageStart`    | Runs before each stage is executed |
-| `onStageComplete` | Runs after each stage is executed  |
-
-Middleware is specified as an object with middleware callbacks mapped to at least one of the above event keys. A middleware callback is provided the following attributes:
+A middleware callback is provided the following attributes:
 
 | Parameter      | Description                                                                   |
 | -------------- | ----------------------------------------------------------------------------- |
@@ -102,6 +97,7 @@ Middleware is specified as an object with middleware callbacks mapped to at leas
 | `results`      | A read-only set of results returned by stages so far                          |
 | `stageNames`   | An array of the names of the methods that make up the current pipeline stages |
 | `currentStage` | The name of the current pipeline stage                                        |
+| `next`         | Calls the next middleware in the stack (or the stage if none)                 |
 
 See the [LogStageMiddlewareFactory](./src/middleware/logStageMiddlewareFactory.ts) for a simple middleware implementation. It is wrapped in a factory method so a log method can be properly injected.
 
