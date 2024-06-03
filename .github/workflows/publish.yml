@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Post to Slack
-        uses: Fieldguide/action-slack-deploy-pipeline@v1
+        uses: Fieldguide/action-slack-deploy-pipeline@v2
         id: slack
 
       - name: Checkout code
@@ -47,7 +47,7 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: "Post to Slack"
-        uses: Fieldguide/action-slack-deploy-pipeline@v1
+        uses: Fieldguide/action-slack-deploy-pipeline@v2
         if: always()
         with:
           thread_ts: ${{ steps.slack.outputs.ts }}
