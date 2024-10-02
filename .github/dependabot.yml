@@ -23,10 +23,9 @@ updates:
           - "@tsconfig/*"
           - "typescript"
 
-  - package-ecosystem: "github-actions"
-    directory: "/"
+  - package-ecosystem: 'github-actions'
+    directory: '/'
     schedule:
-      interval: "monthly"
+      interval: 'monthly'
     reviewers:
-      - "namoscato"
-      - "nrutman"
+      - 'Fieldguide/ci'
