@@ -68,8 +68,9 @@ The **Initializer** is a method that takes in the pipeline's arguments and produ
 **Stages** are the independent steps in the process chain. They are processed synchronously (one at a time, in order) until the end of the chain is reached.
 
 As of version `0.1.0` stages can be one of two types
-* PipelineStage
-* PipelineStageWithRollback
+
+- PipelineStage
+- PipelineStageWithRollback
 
 `PipelineStageWithRollback` adds the ability for the user to define a `rollback` function, which should undo changes made by the `execute` function.
 
