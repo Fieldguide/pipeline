@@ -1,14 +1,17 @@
 import { logStageMiddlewareFactory } from "middleware/logStageMiddlewareFactory";
 import {
+  EXTERNAL_STATE,
   TestMiddleware,
   TestPipelineArguments,
   TestPipelineContext,
   TestPipelineResults,
   TestStage,
+  TestStageWithRollback,
   additionStage,
   errorStage,
   initializer,
   returnHistoryResult,
+  stageWithRollback,
   testPipelineResultValidator,
 } from "../__mocks__/TestPipeline";
 import { buildPipeline } from "../buildPipeline";
@@ -27,6 +30,12 @@ const successfulStages: TestStage[] = [
 const partialResultsStages: TestStage[] = [additionStage, returnSumResult];
 
 const errorStages: TestStage[] = [errorStage, returnHistoryResult];
+
+const stagesWithRollback: (TestStage | TestStageWithRollback)[] = [
+  additionStage,
+  stageWithRollback,
+  errorStage,
+];
 
 describe("buildPipeline", () => {
   describe("when running a simple pipeline", () => {
@@ -98,10 +107,23 @@ describe("buildPipeline", () => {
       ]);
     });
   });
+
+  describe("when using a pipeline stage that can rollback", () => {
+    it("should allow a stage to undo the changes it made ", async () => {
+      try {
+        await runPipelineForStages(stagesWithRollback);
+      } catch {
+        // swallow error in order to confirm rollback functionality
+      }
+
+      // confirm that we rolled back to initial value of zero
+      expect(EXTERNAL_STATE.value).toEqual(0);
+    });
+  });
 });
 
 function runPipelineForStages(
-  stages: TestStage[],
+  stages: (TestStage | TestStageWithRollback)[],
   middleware: TestMiddleware[] = [],
 ) {
   const pipeline = buildPipeline<

@@ -15,6 +15,18 @@ export type PipelineStage<
 > = (context: C, metadata: PipelineMetadata<A>) => PipelineStageResult<R>;
 
 /**
+ * A pipeline stage that has the ability to rollback changes made with the `execute` function
+ */
+export interface PipelineStageWithRollback<
+  A extends object,
+  C extends object,
+  R extends object,
+> {
+  execute: PipelineStage<A, C, R>;
+  rollback: (context: C, metadata: PipelineMetadata<A>) => Promise<void> | void;
+}
+
+/**
  * Optional partial result that gets merged with results from other stages
  */
 export type PipelineStageResult<R extends object> =

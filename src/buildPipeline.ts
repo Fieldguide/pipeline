@@ -1,4 +1,5 @@
 import { merge } from "lodash";
+import { isPipelineStageWithRollback } from "utils";
 import { PipelineError } from "./error/PipelineError";
 import type {
   Pipeline,
@@ -7,6 +8,7 @@ import type {
   PipelineMiddleware,
   PipelineResultValidator,
   PipelineStage,
+  PipelineStageWithRollback,
 } from "./types";
 
 interface BuildPipelineInput<
@@ -16,7 +18,7 @@ interface BuildPipelineInput<
 > {
   name: string;
   initializer: PipelineInitializer<C, A>;
-  stages: PipelineStage<A, C, R>[];
+  stages: (PipelineStage<A, C, R> | PipelineStageWithRollback<A, C, R>)[];
   resultsValidator: PipelineResultValidator<R>;
   middleware?: PipelineMiddleware<A, C, R>[];
 }
@@ -45,11 +47,12 @@ export function buildPipeline<
       name,
       arguments: args,
     };
+    const context = await initializer(args);
+
+    const potentiallyProcessedStages = [];
 
     try {
       const stageNames = stages.map((s) => s.name);
-
-      const context = await initializer(args);
       maybeContext = context;
 
       const reversedMiddleware = [...middlewares].reverse();
@@ -72,12 +75,17 @@ export function buildPipeline<
 
       for (const stage of stages) {
         // initialize next() with the stage itself
-        let next = () => stage(context, metadata) as Promise<Partial<R>>;
+        let next = isPipelineStageWithRollback(stage)
+          ? () => stage.execute(context, metadata) as Promise<Partial<R>>
+          : () => stage(context, metadata) as Promise<Partial<R>>;
 
         // wrap stage with middleware such that the first middleware is the outermost function
         for (const middleware of reversedMiddleware) {
           next = wrapMiddleware(middleware, stage.name, next);
         }
+
+        // Add stage to a stack that can be rolled back if necessary
+        potentiallyProcessedStages.push(stage);
 
         // invoke middleware-wrapped stage
         const stageResults = await next();
@@ -94,6 +102,9 @@ export function buildPipeline<
 
       return results;
     } catch (cause) {
+      await rollback(potentiallyProcessedStages, context, metadata, results);
+
+      // Throw error after rolling back all stages
       throw new PipelineError(
         String(cause),
         maybeContext,
@@ -103,4 +114,31 @@ export function buildPipeline<
       );
     }
   };
+}
+
+/**
+ * Rollback changes made by stages in reverse order
+ */
+async function rollback<A extends object, C extends object, R extends object>(
+  stages: (PipelineStage<A, C, R> | PipelineStageWithRollback<A, C, R>)[],
+  context: C,
+  metadata: PipelineMetadata<A>,
+  results: R,
+) {
+  let stage;
+  while ((stage = stages.pop()) !== undefined) {
+    if (isPipelineStageWithRollback(stage)) {
+      try {
+        await stage.rollback(context, metadata);
+      } catch (rollbackCause) {
+        throw new PipelineError(
+          String(`Rollback failed for stage: ${stage.name}`),
+          context,
+          results,
+          metadata,
+          rollbackCause,
+        );
+      }
+    }
+  }
 }
