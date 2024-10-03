@@ -1,5 +1,5 @@
 import { merge } from "lodash";
-import { isPipelineStageWithRollback } from "utils";
+import { getStageName, isPipelineStageWithRollback } from "utils";
 import { PipelineError } from "./error/PipelineError";
 import type {
   Pipeline,
@@ -52,7 +52,7 @@ export function buildPipeline<
     const potentiallyProcessedStages = [];
 
     try {
-      const stageNames = stages.map((s) => s.name);
+      const stageNames: string[] = stages.map((s) => getStageName(s));
       maybeContext = context;
 
       const reversedMiddleware = [...middlewares].reverse();
@@ -81,7 +81,7 @@ export function buildPipeline<
 
         // wrap stage with middleware such that the first middleware is the outermost function
         for (const middleware of reversedMiddleware) {
-          next = wrapMiddleware(middleware, stage.name, next);
+          next = wrapMiddleware(middleware, getStageName(stage), next);
         }
 
         // Add stage to a stack that can be rolled back if necessary
@@ -132,7 +132,7 @@ async function rollback<A extends object, C extends object, R extends object>(
         await stage.rollback(context, metadata);
       } catch (rollbackCause) {
         throw new PipelineError(
-          String(`Rollback failed for stage: ${stage.name}`),
+          String(`Rollback failed for stage: ${getStageName(stage)}`),
           context,
           results,
           metadata,
