@@ -25,7 +25,10 @@ export interface PipelineStageConfiguration<
   R extends object,
 > {
   execute: PipelineStage<A, C, R>;
-  rollback: (context: C, metadata: PipelineMetadata<A>) => Promise<void> | void;
+  rollback?: (
+    context: C,
+    metadata: PipelineMetadata<A>,
+  ) => Promise<void> | void;
 }
 
 /**
