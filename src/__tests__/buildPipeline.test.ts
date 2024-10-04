@@ -1,3 +1,4 @@
+import { PipelineRollbackError } from "error/PipelineRollbackError";
 import { logStageMiddlewareFactory } from "middleware/logStageMiddlewareFactory";
 import {
   TestMiddleware,
@@ -118,29 +119,70 @@ describe("buildPipeline", () => {
   describe("when using a pipeline stage that can rollback", () => {
     let error: unknown;
 
-    beforeEach(async () => {
-      error = undefined;
+    describe("and the rollback is successful", () => {
+      beforeEach(async () => {
+        error = undefined;
 
-      try {
-        await runPipelineForStages(stagesWithRollback);
-      } catch (e) {
-        error = e;
-      }
+        try {
+          await runPipelineForStages(stagesWithRollback);
+        } catch (e) {
+          error = e;
+        }
+      });
+
+      it("should call configured rollback functions", () => {
+        expect(rollback1).toHaveBeenCalledTimes(1);
+        expect(rollback2).toHaveBeenCalledTimes(1);
+      });
+
+      it("should call the rollbacks in the proper order", () => {
+        expect(rollback2.mock.invocationCallOrder[0]).toBeLessThan(
+          rollback1.mock.invocationCallOrder[0] ?? 0,
+        );
+      });
+
+      it("should still throw the error", () => {
+        expect(error).toBeInstanceOf(PipelineError);
+      });
     });
 
-    it("should call configured rollback functions", () => {
-      expect(rollback1).toHaveBeenCalledTimes(1);
-      expect(rollback2).toHaveBeenCalledTimes(1);
-    });
+    describe("and the rollback fails", () => {
+      const errorThrownInRollback = new Error("This is a rollback error");
 
-    it("should call the rollbacks in the proper order", () => {
-      expect(rollback2.mock.invocationCallOrder[0]).toBeLessThan(
-        rollback1.mock.invocationCallOrder[0] ?? 0,
-      );
-    });
+      beforeEach(async () => {
+        rollback1.mockImplementation(() => {
+          throw errorThrownInRollback;
+        });
 
-    it("should still throw the error", () => {
-      expect(error).toBeInstanceOf(PipelineError);
+        error = undefined;
+
+        try {
+          await runPipelineForStages(stagesWithRollback);
+        } catch (e) {
+          error = e;
+        }
+      });
+
+      it("should run the rollbacks from subsequent stages", () => {
+        expect(rollback2).toHaveBeenCalledTimes(1);
+      });
+
+      it("should throw a PipelineRollbackError", () => {
+        expect(error).toBeInstanceOf(PipelineRollbackError);
+      });
+
+      it("should capture the original pipeline error", () => {
+        expect(
+          (error as PipelineRollbackError<object, object, object>)
+            .originalPipelineError.message,
+        ).toBe("[TestPipeline] Error: This stage throws an error!");
+      });
+
+      it("should capture the original cause that was thrown in the rollback", () => {
+        expect(
+          (error as PipelineRollbackError<object, object, object>).cause,
+        ).toBe(errorThrownInRollback);
+      });
     });
   });
 });

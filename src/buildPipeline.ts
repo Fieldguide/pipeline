@@ -1,3 +1,4 @@
+import { PipelineRollbackError } from "error/PipelineRollbackError";
 import { merge } from "lodash";
 import { getStageName, isPipelineStageConfiguration } from "utils";
 import { PipelineError } from "./error/PipelineError";
@@ -102,16 +103,24 @@ export function buildPipeline<
 
       return results;
     } catch (cause) {
-      await rollback(potentiallyProcessedStages, context, metadata, results);
-
-      // Throw error after rolling back all stages
-      throw new PipelineError(
+      const pipelineError = new PipelineError(
         String(cause),
         maybeContext,
         results,
         metadata,
         cause,
       );
+
+      await rollback(
+        potentiallyProcessedStages,
+        context,
+        metadata,
+        results,
+        pipelineError,
+      );
+
+      // Throw error after rolling back all stages
+      throw pipelineError;
     }
   };
 }
@@ -124,6 +133,7 @@ async function rollback<A extends object, C extends object, R extends object>(
   context: C,
   metadata: PipelineMetadata<A>,
   results: R,
+  originalPipelineError: PipelineError<A, C, R>,
 ) {
   let stage;
   while ((stage = stages.pop()) !== undefined) {
@@ -131,11 +141,12 @@ async function rollback<A extends object, C extends object, R extends object>(
       try {
         await stage.rollback(context, metadata);
       } catch (rollbackCause) {
-        throw new PipelineError(
+        throw new PipelineRollbackError(
           String(`Rollback failed for stage: ${getStageName(stage)}`),
           context,
           results,
           metadata,
+          originalPipelineError,
           rollbackCause,
         );
       }
