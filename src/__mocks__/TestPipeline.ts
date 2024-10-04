@@ -1,9 +1,10 @@
-import { last } from "lodash";
+import { last, noop } from "lodash";
 import type {
   PipelineInitializer,
   PipelineMiddleware,
   PipelineResultValidator,
   PipelineStage,
+  PipelineStageConfiguration,
 } from "../types";
 
 export interface TestPipelineArguments {
@@ -20,6 +21,12 @@ export interface TestPipelineResults {
 }
 
 export type TestStage = PipelineStage<
+  TestPipelineArguments,
+  TestPipelineContext,
+  TestPipelineResults
+>;
+
+export type TestStageWithRollback = PipelineStageConfiguration<
   TestPipelineArguments,
   TestPipelineContext,
   TestPipelineResults
@@ -83,6 +90,18 @@ export const returnHistoryResult: TestStage = (context) => {
 export const errorStage: TestStage = () => {
   throw Error("This stage throws an error!");
 };
+
+/**
+ * A stage that specifies a rollback function to undo changes
+ */
+export function generateStageWithRollback(
+  rollbackFunction: () => Promise<void> | void,
+): TestStageWithRollback {
+  return {
+    execute: noop,
+    rollback: rollbackFunction,
+  };
+}
 
 /**
  * A results validator for the test pipeline

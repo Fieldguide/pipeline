@@ -6,19 +6,20 @@ A type-safe toolkit to easily compose synchronous process chains in TypeScript/J
 
 ## Table of Contents
 
-- [Table of Contents](#table-of-contents)
-- [Overview](#overview)
-- [Installation](#installation)
-- [Types](#types)
-- [Builder](#builder)
-- [Initializer](#initializer)
-- [Stages](#stages)
-  - [Stage Arguments](#stage-arguments)
-  - [Stage Results](#stage-results)
-- [Results Validator](#results-validator)
-- [Middleware](#middleware)
-- [Error Handling](#error-handling)
-- [Example Use Cases](#example-use-cases)
+- [Pipeline](#pipeline)
+  - [Table of Contents](#table-of-contents)
+  - [Overview](#overview)
+  - [Installation](#installation)
+  - [Types](#types)
+  - [Builder](#builder)
+  - [Initializer](#initializer)
+  - [Stages](#stages)
+    - [Stage Arguments](#stage-arguments)
+    - [Stage Results](#stage-results)
+  - [Results Validator](#results-validator)
+  - [Middleware](#middleware)
+  - [Error Handling](#error-handling)
+  - [Example Use Cases](#example-use-cases)
 
 ## Overview
 
@@ -66,6 +67,15 @@ The **Initializer** is a method that takes in the pipeline's arguments and produ
 ## Stages
 
 **Stages** are the independent steps in the process chain. They are processed synchronously (one at a time, in order) until the end of the chain is reached.
+
+As of version `0.1.0` stages can be one of two types
+
+- PipelineStage
+- PipelineStageConfiguration
+
+`PipelineStageConfiguration` adds the ability for the user to define a `rollback` function, which should undo changes made by the `execute` function.
+
+The pipeline can support processing a collection of stages of either type.
 
 ### Stage Arguments
 
