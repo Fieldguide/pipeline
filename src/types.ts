@@ -15,9 +15,11 @@ export type PipelineStage<
 > = (context: C, metadata: PipelineMetadata<A>) => PipelineStageResult<R>;
 
 /**
- * A pipeline stage that has the ability to rollback changes made with the `execute` function
+ * A more explicit configuration for a pipeline stage
+ * * execute: the function that executes the stage (identical to `PipelineStage`)
+ * * rollback: the function that rolls back any changes made within `execute` should an error occur
  */
-export interface PipelineStageWithRollback<
+export interface PipelineStageConfiguration<
   A extends object,
   C extends object,
   R extends object,

@@ -1,5 +1,5 @@
 import { merge } from "lodash";
-import { getStageName, isPipelineStageWithRollback } from "utils";
+import { getStageName, isPipelineStageConfiguration } from "utils";
 import { PipelineError } from "./error/PipelineError";
 import type {
   Pipeline,
@@ -8,7 +8,7 @@ import type {
   PipelineMiddleware,
   PipelineResultValidator,
   PipelineStage,
-  PipelineStageWithRollback,
+  PipelineStageConfiguration,
 } from "./types";
 
 interface BuildPipelineInput<
@@ -18,7 +18,7 @@ interface BuildPipelineInput<
 > {
   name: string;
   initializer: PipelineInitializer<C, A>;
-  stages: (PipelineStage<A, C, R> | PipelineStageWithRollback<A, C, R>)[];
+  stages: (PipelineStage<A, C, R> | PipelineStageConfiguration<A, C, R>)[];
   resultsValidator: PipelineResultValidator<R>;
   middleware?: PipelineMiddleware<A, C, R>[];
 }
@@ -75,7 +75,7 @@ export function buildPipeline<
 
       for (const stage of stages) {
         // initialize next() with the stage itself
-        let next = isPipelineStageWithRollback(stage)
+        let next = isPipelineStageConfiguration(stage)
           ? () => stage.execute(context, metadata) as Promise<Partial<R>>
           : () => stage(context, metadata) as Promise<Partial<R>>;
 
@@ -120,14 +120,14 @@ export function buildPipeline<
  * Rollback changes made by stages in reverse order
  */
 async function rollback<A extends object, C extends object, R extends object>(
-  stages: (PipelineStage<A, C, R> | PipelineStageWithRollback<A, C, R>)[],
+  stages: (PipelineStage<A, C, R> | PipelineStageConfiguration<A, C, R>)[],
   context: C,
   metadata: PipelineMetadata<A>,
   results: R,
 ) {
   let stage;
   while ((stage = stages.pop()) !== undefined) {
-    if (isPipelineStageWithRollback(stage)) {
+    if (isPipelineStageConfiguration(stage)) {
       try {
         await stage.rollback(context, metadata);
       } catch (rollbackCause) {

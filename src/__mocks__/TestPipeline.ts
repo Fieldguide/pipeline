@@ -1,10 +1,10 @@
-import { last, sum } from "lodash";
+import { last, noop } from "lodash";
 import type {
   PipelineInitializer,
   PipelineMiddleware,
   PipelineResultValidator,
   PipelineStage,
-  PipelineStageWithRollback,
+  PipelineStageConfiguration,
 } from "../types";
 
 export interface TestPipelineArguments {
@@ -26,7 +26,7 @@ export type TestStage = PipelineStage<
   TestPipelineResults
 >;
 
-export type TestStageWithRollback = PipelineStageWithRollback<
+export type TestStageWithRollback = PipelineStageConfiguration<
   TestPipelineArguments,
   TestPipelineContext,
   TestPipelineResults
@@ -37,19 +37,6 @@ export type TestMiddleware = PipelineMiddleware<
   TestPipelineContext,
   TestPipelineResults
 >;
-
-export const EXTERNAL_STATE = {
-  value: 0,
-  // simulate an async request
-  updateValue(value: number): Promise<number> {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        this.value = value;
-        resolve(this.value);
-      }, 1000);
-    });
-  },
-};
 
 /**
  * A stage to set up the test pipeline
@@ -107,16 +94,14 @@ export const errorStage: TestStage = () => {
 /**
  * A stage that specifies a rollback function to undo changes
  */
-export const stageWithRollback: TestStageWithRollback = {
-  execute: async (context, metadata) => {
-    context.sums.push(metadata.arguments.increment);
-    console.log(`value of sums: ${String(context.sums)}`);
-    await EXTERNAL_STATE.updateValue(sum(context.sums));
-  },
-  rollback: async () => {
-    await EXTERNAL_STATE.updateValue(0);
-  },
-};
+export function generateStageWithRollback(
+  rollbackFunction: () => Promise<void> | void,
+): TestStageWithRollback {
+  return {
+    execute: noop,
+    rollback: rollbackFunction,
+  };
+}
 
 /**
  * A results validator for the test pipeline
