@@ -1,7 +1,5 @@
-import { PipelineRollbackError } from "error/PipelineRollbackError";
+import { PipelineError, PipelineRollbackError } from "error";
 import { merge } from "lodash";
-import { isPipelineStageConfiguration } from "utils";
-import { PipelineError } from "./error/PipelineError";
 import type {
   Pipeline,
   PipelineInitializer,
@@ -10,7 +8,8 @@ import type {
   PipelineResultValidator,
   PipelineStage,
   PipelineStageConfiguration,
-} from "./types";
+} from "types";
+import { isPipelineStageConfiguration } from "utils";
 
 interface BuildPipelineInput<
   A extends object,

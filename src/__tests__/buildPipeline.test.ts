@@ -1,4 +1,5 @@
-import { PipelineRollbackError } from "error/PipelineRollbackError";
+import { buildPipeline } from "buildPipeline";
+import { PipelineError, PipelineRollbackError } from "error";
 import { logStageMiddlewareFactory } from "middleware/logStageMiddlewareFactory";
 import {
   TestMiddleware,
@@ -12,11 +13,9 @@ import {
   generateStageWithRollback,
   initializer,
   returnHistoryResult,
+  returnSumResult,
   testPipelineResultValidator,
 } from "../__mocks__/TestPipeline";
-import { buildPipeline } from "../buildPipeline";
-import { PipelineError } from "../error/PipelineError";
-import { returnSumResult } from "./../__mocks__/TestPipeline";
 
 const INCREMENT = 5;
 
