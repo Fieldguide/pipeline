@@ -28,5 +28,4 @@ updates:
     schedule:
       interval: "monthly"
     reviewers:
-      - "namoscato"
-      - "nrutman"
+      - "Fieldguide/ci"
