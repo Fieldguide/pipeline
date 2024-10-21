@@ -74,6 +74,8 @@ As of version `0.1.0` stages can be one of two types
 - PipelineStageConfiguration
 
 `PipelineStageConfiguration` adds the ability for the user to define a `rollback` function, which should undo changes made by the `execute` function.
+It also allows providing an optional `name` property for debugging/logging purposes.
+Defaults to `Stage ${0..n}` based on the index of the stage in the pipeline.
 
 The pipeline can support processing a collection of stages of either type.
 

@@ -59,6 +59,7 @@ export function buildPipeline<
 
         return {
           execute: stage,
+          name: stage.name,
         };
       });
 
@@ -66,7 +67,7 @@ export function buildPipeline<
 
     try {
       const stageNames: string[] = stageConfigurations.map(
-        (s) => s.execute.name,
+        (s, idx) => s.name || `Stage ${idx}`,
       );
       maybeContext = context;
 
@@ -88,14 +89,15 @@ export function buildPipeline<
         };
       };
 
-      for (const stage of stageConfigurations) {
+      for (const [idx, stage] of stageConfigurations.entries()) {
         // initialize next() with the stage itself
         let next = () =>
           stage.execute(context, metadata) as Promise<Partial<R>>;
 
         // wrap stage with middleware such that the first middleware is the outermost function
         for (const middleware of reversedMiddleware) {
-          next = wrapMiddleware(middleware, stage.execute.name, next);
+          // A stage name for the current index is assured to exist given it was built using the same collection we're iterating over now
+          next = wrapMiddleware(middleware, stageNames[idx]!, next);
         }
 
         // Add stage to a stack that can be rolled back if necessary

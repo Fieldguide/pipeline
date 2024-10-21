@@ -96,10 +96,12 @@ export const errorStage: TestStage = () => {
  */
 export function generateStageWithRollback(
   rollbackFunction: () => Promise<void> | void,
+  name?: string,
 ): TestStageWithRollback {
   return {
     execute: noop,
     rollback: rollbackFunction,
+    name: name,
   };
 }
 
