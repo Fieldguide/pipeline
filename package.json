@@ -1,7 +1,7 @@
 {
   "name": "@fieldguide/pipeline",
   "description": "A toolkit to easily build synchronous process pipelines in TypeScript/JavaScript",
-  "version": "0.1.0",
+  "version": "1.2.0",
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "scripts": {
