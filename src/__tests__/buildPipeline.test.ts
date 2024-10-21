@@ -2,19 +2,19 @@ import { buildPipeline } from "buildPipeline";
 import { PipelineError, PipelineRollbackError } from "error";
 import { logStageMiddlewareFactory } from "middleware/logStageMiddlewareFactory";
 import {
-  TestMiddleware,
-  TestPipelineArguments,
-  TestPipelineContext,
-  TestPipelineResults,
-  TestStage,
-  TestStageWithRollback,
   additionStage,
   errorStage,
   generateStageWithRollback,
   initializer,
   returnHistoryResult,
   returnSumResult,
+  TestMiddleware,
+  TestPipelineArguments,
+  TestPipelineContext,
+  TestPipelineResults,
   testPipelineResultValidator,
+  TestStage,
+  TestStageWithRollback,
 } from "../__mocks__/TestPipeline";
 
 const INCREMENT = 5;
@@ -33,10 +33,14 @@ const errorStages: TestStage[] = [errorStage, returnHistoryResult];
 const rollback1 = jest.fn();
 const rollback2 = jest.fn();
 
+const successfulStagesWithRollback: (TestStage | TestStageWithRollback)[] = [
+  generateStageWithRollback(rollback1),
+  generateStageWithRollback(rollback2, "rollback1"),
+];
+
 const stagesWithRollback: (TestStage | TestStageWithRollback)[] = [
   additionStage,
-  generateStageWithRollback(rollback1),
-  generateStageWithRollback(rollback2),
+  ...successfulStagesWithRollback,
   errorStage,
 ];
 
@@ -89,16 +93,19 @@ describe("buildPipeline", () => {
       testMiddleware1 = createMiddlewareMock("testMiddleware1");
       testMiddleware2 = createMiddlewareMock("testMiddleware2");
 
-      await runPipelineForStages(successfulStages, [
-        logStageMiddlewareFactory(),
-        testMiddleware1,
-        testMiddleware2,
-      ]);
+      await runPipelineForStages(
+        [...successfulStages, ...successfulStagesWithRollback],
+        [logStageMiddlewareFactory(), testMiddleware1, testMiddleware2],
+      );
     });
 
     it(`should run each middleware ${successfulStages.length} times`, () => {
-      expect(testMiddleware1).toHaveBeenCalledTimes(successfulStages.length);
-      expect(testMiddleware2).toHaveBeenCalledTimes(successfulStages.length);
+      expect(testMiddleware1).toHaveBeenCalledTimes(
+        successfulStages.length + successfulStagesWithRollback.length,
+      );
+      expect(testMiddleware2).toHaveBeenCalledTimes(
+        successfulStages.length + successfulStagesWithRollback.length,
+      );
     });
 
     it("should run middleware in the correct order", () => {
@@ -111,6 +118,10 @@ describe("buildPipeline", () => {
         "returnSumResult: testMiddleware2",
         "returnHistoryResult: testMiddleware1",
         "returnHistoryResult: testMiddleware2",
+        "Stage 4: testMiddleware1",
+        "Stage 4: testMiddleware2",
+        "rollback1: testMiddleware1",
+        "rollback1: testMiddleware2",
       ]);
     });
   });

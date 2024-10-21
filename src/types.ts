@@ -15,15 +15,17 @@ export type PipelineStage<
 > = (context: C, metadata: PipelineMetadata<A>) => PipelineStageResult<R>;
 
 /**
- * A more explicit configuration for a pipeline stage
- * * execute: the function that executes the stage (identical to `PipelineStage`)
- * * rollback: the function that rolls back any changes made within `execute` should an error occur
+ * A more explicit configuration for a pipeline stage:
+ * * name: the name of the stage for debugging/logging purposes. Defaults to `Stage ${idx}`.
+ * * execute: the function that executes the stage (identical to {@link PipelineStage}).
+ * * rollback: the function that rolls back any changes made within `execute` should an error occur.
  */
 export interface PipelineStageConfiguration<
   A extends object,
   C extends object,
   R extends object,
 > {
+  name?: string;
   execute: PipelineStage<A, C, R>;
   rollback?: (
     context: C,
