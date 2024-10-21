@@ -16,7 +16,7 @@ export type PipelineStage<
 
 /**
  * A more explicit configuration for a pipeline stage:
- * * name: the name of the stage for debugging/logging purposes. Defaults to `Stage ${idx}`.
+ * * name: the name of the stage for debugging/logging purposes. Defaults to `Stage ${0..n}` based on the index of the stage in the pipeline.
  * * execute: the function that executes the stage (identical to {@link PipelineStage}).
  * * rollback: the function that rolls back any changes made within `execute` should an error occur.
  */
