@@ -96,6 +96,7 @@ export function buildPipeline<
 
         // wrap stage with middleware such that the first middleware is the outermost function
         for (const middleware of reversedMiddleware) {
+          // A stage name for the current index is assured to exist given it was built using the same collection we're iterating over now
           next = wrapMiddleware(middleware, stageNames[idx]!, next);
         }
 
