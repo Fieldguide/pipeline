@@ -1,0 +1,8 @@
+name: Action Lint
+on:
+  pull_request:
+    paths:
+      - .github/**/*.ya?ml
+jobs:
+  ci:
+    uses: fieldguide/github-actions-common/.github/workflows/action-lint.yaml@main
