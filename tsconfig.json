@@ -1,12 +1,12 @@
 {
-  "extends": "@tsconfig/node18/tsconfig.json",
+  "extends": "@tsconfig/node22/tsconfig.json",
   "compilerOptions": {
     "baseUrl": "src",
     "rootDir": "src/",
     "outDir": "build/",
     "declaration": true,
 
-    // pulls from Node 18 + Strictest: https://github.com/tsconfig/bases/blob/main/bases/node18-strictest.combined.json
+    // pulls from Strictest: https://github.com/tsconfig/bases/blob/main/bases/strictest.json
     "allowJs": false,
     "allowSyntheticDefaultImports": true,
     "allowUnusedLabels": false,
@@ -16,8 +16,7 @@
     "noUncheckedIndexedAccess": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "resolveJsonModule": true,
-    "moduleResolution": "Node16"
+    "resolveJsonModule": true
   },
   "include": ["src", "tsup.config.ts"]
 }
