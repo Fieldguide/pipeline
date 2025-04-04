@@ -1,5 +1,5 @@
 {
-  "extends": "@tsconfig/node18/tsconfig.json",
+  "extends": "@tsconfig/node22/tsconfig.json",
   "compilerOptions": {
     "baseUrl": "src",
     "rootDir": "src/",
@@ -16,8 +16,7 @@
     "noUncheckedIndexedAccess": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "resolveJsonModule": true,
-    "moduleResolution": "Node16"
+    "resolveJsonModule": true
   },
   "include": ["src", "tsup.config.ts"]
 }
