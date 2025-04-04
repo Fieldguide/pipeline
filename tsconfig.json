@@ -6,7 +6,7 @@
     "outDir": "build/",
     "declaration": true,
 
-    // pulls from Node 18 + Strictest: https://github.com/tsconfig/bases/blob/main/bases/node18-strictest.combined.json
+    // pulls from Strictest: https://github.com/tsconfig/bases/blob/main/bases/strictest.json
     "allowJs": false,
     "allowSyntheticDefaultImports": true,
     "allowUnusedLabels": false,
