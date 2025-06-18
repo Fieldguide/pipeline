@@ -6,7 +6,7 @@
   "types": "build/index.d.ts",
   "scripts": {
     "dev": "tsc --noEmit --watch",
-    "prepack": "npm run build",
+    "prepack": "tsup",
     "build": "tsup",
     "eslint": "eslint --ext .js,.ts --cache --cache-location=node_modules/.cache/eslint --cache-strategy content .",
     "eslint:fix": "npm run eslint -- --fix",
