@@ -1,4 +1,4 @@
-import { PipelineStage, PipelineStageConfiguration } from "types";
+import { PipelineStage, PipelineStageConfiguration } from "./types";
 
 export function isPipelineStageConfiguration<
   A extends object,
