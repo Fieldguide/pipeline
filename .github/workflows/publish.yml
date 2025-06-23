@@ -14,8 +14,11 @@ env:
   SLACK_DEPLOY_ERROR_REACTION: ${{ vars.SLACK_DEPLOY_ERROR_REACTION_PRODUCTION }}
 
 jobs:
-  publish:
+  start:
     runs-on: ubuntu-latest
+    outputs:
+      thread_ts: ${{ steps.slack.outputs.ts }}
+      version: ${{ steps.version.outputs.value }}
     steps:
       - name: Post to Slack
         uses: Fieldguide/action-slack-deploy-pipeline@v2
@@ -28,8 +31,15 @@ jobs:
         id: version
         run: echo "value=${GITHUB_REF#refs/*/v}" >> $GITHUB_OUTPUT
 
+  publish-npm:
+    needs: start
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Update npm package version for build / publishing
-        run: npm version ${{ steps.version.outputs.value }} --no-git-tag-version
+        run: npm version ${{ needs.start.outputs.version }} --no-git-tag-version
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -47,9 +57,43 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
+  publish-github:
+    needs: start
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Update npm package version for build / publishing
+        run: npm version ${{ needs.start.outputs.version }} --no-git-tag-version
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+          cache: "npm"
+          registry-url: "https://npm.pkg.github.com"
+
+      - name: Install dependencies
+        run: npm ci --prefer-offline --no-audit
+
+      - name: Publish package
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  finish:
+    needs:
+      - start
+      - publish-npm
+      - publish-github
+    runs-on: ubuntu-latest
+    steps:
       - name: "Post to Slack"
         uses: Fieldguide/action-slack-deploy-pipeline@v2
         if: always()
         with:
-          thread_ts: ${{ steps.slack.outputs.ts }}
+          thread_ts: ${{ needs.start.outputs.thread_ts }}
           conclusion: true
