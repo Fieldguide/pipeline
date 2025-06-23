@@ -24,9 +24,6 @@ jobs:
         uses: Fieldguide/action-slack-deploy-pipeline@v2
         id: slack
 
-      - name: Checkout code
-        uses: actions/checkout@v4
-
       - name: Parse version
         id: version
         run: echo "value=${GITHUB_REF#refs/*/v}" >> $GITHUB_OUTPUT
