@@ -1,8 +1,15 @@
+# copied from https://github.com/Fieldguide/github-actions-common/blob/main/.github/workflows/action-lint.yaml
+
 name: Action Lint
 on:
   pull_request:
-    paths:
-      - .github/**/*.ya?ml
+  workflow_call:
 jobs:
-  ci:
-    uses: fieldguide/github-actions-common/.github/workflows/action-lint.yaml@main
+  actionlint:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: reviewdog/action-actionlint@v1.65.2
+        with:
+          actionlint_flags: "-shellcheck= "
+          fail_level: error
