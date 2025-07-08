@@ -4,6 +4,9 @@
   "version": "0.1.0",
   "packageManager": "pnpm@10.12.4",
   "main": "build/index.js",
+  "engines": {
+    "pnpm": ">=10.12.4"
+  },
   "types": "build/index.d.ts",
   "scripts": {
     "dev": "tsc --noEmit --watch",
