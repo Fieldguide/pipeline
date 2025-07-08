@@ -36,21 +36,22 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Update npm package version for build / publishing
-        run: npm version ${{ needs.start.outputs.version }} --no-git-tag-version
+        run: pnpm version ${{ needs.start.outputs.version }} --no-git-tag-version
 
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
-          cache: "npm"
           registry-url: "https://registry.npmjs.org"
           scope: "@fieldguide"
 
       - name: Install dependencies
-        run: npm ci --prefer-offline --no-audit
+        run: pnpm install
 
       - name: Publish package
-        run: npm publish --access public
+        run: pnpm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
@@ -64,20 +65,21 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Update npm package version for build / publishing
-        run: npm version ${{ needs.start.outputs.version }} --no-git-tag-version
+        run: pnpm version ${{ needs.start.outputs.version }} --no-git-tag-version
 
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
-          cache: "npm"
           registry-url: "https://npm.pkg.github.com"
 
       - name: Install dependencies
-        run: npm ci --prefer-offline --no-audit
+        run: pnpm install --frozen-lockfile
 
       - name: Publish package
-        run: npm publish --access public
+        run: pnpm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

@@ -1,3 +1,4 @@
 .github/*.md
 .vscode
 build
+pnpm-lock.yaml

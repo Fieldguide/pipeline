@@ -29,11 +29,13 @@ This library seeks to provide a structure to break down large multi-step process
 
 ## Installation
 
-Install the package with your favorite package manager:
+Install the package with pnpm:
 
+```bash
+pnpm add @fieldguide/pipeline
 ```
-npm install @fieldguide/pipeline
-```
+
+> **Note:** If you're using pnpm for the first time, you may need to enable corepack first by running `corepack enable` (this is a one-time setup per Node.js version).
 
 ## Types
 
