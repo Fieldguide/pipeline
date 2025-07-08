@@ -16,7 +16,7 @@ jobs:
         with:
           node-version-file: ".nvmrc"
       - run: pnpm install
-      - run: pnpm run prettier
-      - run: pnpm run test:ci
-      - run: pnpm run eslint
-      - run: pnpm run build
+      - run: pnpm prettier
+      - run: pnpm test:ci
+      - run: pnpm eslint
+      - run: pnpm build
