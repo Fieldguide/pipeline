@@ -5,7 +5,7 @@
     "rootDir": "src/",
     "outDir": "build/",
     "declaration": true,
-
+    "lib": ["dom", "esnext"],
     // pulls from Strictest: https://github.com/tsconfig/bases/blob/main/bases/strictest.json
     "allowJs": false,
     "allowSyntheticDefaultImports": true,

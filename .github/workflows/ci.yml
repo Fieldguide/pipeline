@@ -11,19 +11,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
-          cache: "npm"
-      - name: Cache node_modules/.cache directory
-        uses: actions/cache@v4
-        with:
-          path: node_modules/.cache
-          key: node-modules-dot-cache-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}-${{ github.run_id }}
-          restore-keys: |
-            node-modules-dot-cache-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}-
-      - run: npm ci --prefer-offline --no-audit
-      - run: npm run prettier
-      - run: npm run test:ci
-      - run: npm run eslint
-      - run: npm run build
+      - run: pnpm install
+      - run: pnpm prettier
+      - run: pnpm test:ci
+      - run: pnpm eslint
+      - run: pnpm build
