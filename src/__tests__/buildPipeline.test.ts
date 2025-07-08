@@ -17,6 +17,8 @@ import {
   TestStageWithRollback,
 } from "../__mocks__/TestPipeline";
 
+jest.spyOn(console, "log").mockImplementation(() => {});
+
 const INCREMENT = 5;
 
 const successfulStages: TestStage[] = [
