@@ -8,7 +8,7 @@ jobs:
   actionlint:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: reviewdog/action-actionlint@v1.65.2
         with:
           actionlint_flags: "-shellcheck= "
