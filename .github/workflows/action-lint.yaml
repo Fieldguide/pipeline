@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v5
-      - uses: reviewdog/action-actionlint@v1.67.0
+      - uses: reviewdog/action-actionlint@v1.68.0
         with:
           actionlint_flags: "-shellcheck= "
           fail_level: error
