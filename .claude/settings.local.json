@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pnpm outdated:*)",
+      "WebSearch",
+      "WebFetch(domain:eslint.org)",
+      "WebFetch(domain:typescript-eslint.io)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:www.npmjs.com)",
+      "Bash(node:*)",
+      "Bash(pnpm install:*)",
+      "Bash(pnpm build:*)",
+      "Bash(pnpm test:ci:*)",
+      "Bash(pnpm eslint:*)",
+      "Bash(pnpm prettier:*)"
+    ]
+  }
+}
