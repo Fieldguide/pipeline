@@ -9,7 +9,7 @@ export default tseslint.config(
     ignores: ["build/", "*.config.{js,mjs,ts}"],
   },
   eslint.configs.recommended,
-  ...tseslint.configs.recommendedTypeChecked,
+  tseslint.configs.recommendedTypeChecked,
   eslintConfigPrettier,
   {
     languageOptions: {

@@ -12,7 +12,7 @@
     "dev": "tsc --noEmit --watch",
     "prepack": "pnpm run build",
     "build": "tsup",
-    "eslint": "eslint --cache --cache-location node_modules/.cache/eslint .",
+    "eslint": "eslint .",
     "eslint:fix": "pnpm run eslint -- --fix",
     "prettier": "prettier --check .",
     "prettier:fix": "prettier --write .",
