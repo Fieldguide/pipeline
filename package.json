@@ -50,7 +50,6 @@
     "eslint": "^10.0.0",
     "eslint-config-prettier": "^10.1.0",
     "eslint-plugin-unused-imports": "^4.4.0",
-    "globals": "^16.0.0",
     "jest": "^30.0.4",
     "prettier": "^3.8.1",
     "tsup": "^8.5.1",

@@ -1,10 +1,10 @@
+import { defineConfig } from "eslint/config";
 import eslint from "@eslint/js";
 import tseslint from "typescript-eslint";
 import eslintConfigPrettier from "eslint-config-prettier";
 import unusedImports from "eslint-plugin-unused-imports";
-import globals from "globals";
 
-export default tseslint.config(
+export default defineConfig([
   {
     ignores: ["build/", "*.config.{js,mjs,ts}"],
   },
@@ -12,10 +12,8 @@ export default tseslint.config(
   tseslint.configs.recommendedTypeChecked,
   eslintConfigPrettier,
   {
+    files: ["**/*.ts"],
     languageOptions: {
-      globals: {
-        ...globals.node,
-      },
       parserOptions: {
         projectService: true,
         tsconfigRootDir: import.meta.dirname,
@@ -45,4 +43,4 @@ export default tseslint.config(
       "@typescript-eslint/unbound-method": "off",
     },
   },
-);
+]);
