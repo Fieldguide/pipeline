@@ -12,3 +12,6 @@ node_modules/
 
 # eslint cache
 .eslintcache
+
+# IDE
+.claude/settings.local.json
