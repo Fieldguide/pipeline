@@ -21,7 +21,7 @@ jobs:
       version: ${{ steps.version.outputs.value }}
     steps:
       - name: Post to Slack
-        uses: Fieldguide/action-slack-deploy-pipeline@v2
+        uses: Fieldguide/action-slack-deploy-pipeline@v3
         id: slack
 
       - name: Parse version
@@ -93,7 +93,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "Post to Slack"
-        uses: Fieldguide/action-slack-deploy-pipeline@v2
+        uses: Fieldguide/action-slack-deploy-pipeline@v3
         if: always()
         with:
           thread_ts: ${{ needs.start.outputs.thread_ts }}
