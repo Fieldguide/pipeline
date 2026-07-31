@@ -37,9 +37,7 @@ export interface PipelineStageConfiguration<
  * Optional partial result that gets merged with results from other stages
  */
 export type PipelineStageResult<R extends object> =
-  | Promise<Partial<R> | void>
-  | Partial<R>
-  | void;
+  Promise<Partial<R> | void> | Partial<R> | void;
 
 /**
  * A method that initializes the pipeline by creating the context object that gets passed to each stage. Note that because the context extends PipelineContext, this method must also include the pipeline name and arguments when constructing the context object.
