@@ -1,0 +1,14 @@
+name: Merge block check
+
+on:
+  merge_group:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check-merge-block:
+    uses: Fieldguide/github-actions-common/.github/workflows/merge-block-check.yaml@main
+    secrets:
+      sdk_key: ${{ secrets.LAUNCHDARKLY_PRODUCTION_US_SDK_KEY }}
